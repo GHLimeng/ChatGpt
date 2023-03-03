@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ChatGPT</title>
+    <meta charset="UTF-8">
+    <style>
+        /* 父容器设置为flex布局，并且垂直和水平居中 */
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        /* 对话框容器设置为相对定位，以便在其中绝对定位对话记录和表单 */
+        .dialog-container {
+            background: white;
+            filter:alpha(opacity:90);
+            opacity:0.9;
+            position: relative;
+            width: 600px;
+            height: 600px;
+            border: 1px solid black;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        /* 对话记录容器设置为绝对定位，并且垂直和水平居中 */
+        .chatlog-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            height: 90%;
+            width: 100%;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* 每个消息的样式 */
+        .message {
+            margin-bottom: 10px;
+        }
+
+        /* 发送者名称的样式 */
+        .sender {
+            font-weight: bold;
+        }
+
+        /* 消息内容的样式 */
+        .message-content {
+            margin-left: 10px;
+        }
+
+        /* 表单容器的样式 */
+        .form-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 10%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        /* 表单输入框的样式 */
+        #message {
+            width: 80%;
+            padding: 5px;
+            margin-right: 10px;
+            border-radius: 5px;
+            border: none;
+            box-sizing: border-box;
+        }
+
+        /* 发送按钮的样式 */
+        #send-button {
+            width: 10%;
+            padding: 5px;
+            border-radius: 5px;
+            border: none;
+            background-color: dodgerblue;
+            color: white;
+            cursor: pointer;
+        }
+
+        /* 清除浮动 */
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="background-image: url('https://s1.ax1x.com/2023/03/03/ppkZEKs.jpg');">
+        <div class="dialog-container" >
+            <div class="chatlog-container">
+                {% for sender, message in chat_log %}
+                    <div class="message">
+                        <span class="sender">{{ sender }}:</span>
+                        <span class="message-content">{{ message }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="form-container">
+                <form method="post" action="/send_message">
+                    <input type="text" id="message" name="message" placeholder="Enter message...">
+                    <button type="submit" id="send-button">Send</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        // 获取表单和发送按钮
+        const form = document.getElementById("message-form");
+        const sendButton = document.getElementById("send-button");
+
+        // 获取对话记录容器
+        const chatlogContainer = document.querySelector(".chatlog-container");
+
+        // 在页面加载后，滚动到对话记录的底部
+        chatlogContainer.scrollTop = chatlogContainer.scrollHeight;
+
+        // 当表单提交时
+        form.addEventListener("submit", (event) => {
+            // 阻止表单提交的默认行为
+            event.preventDefault();
+
+            // 获取表单输入框的值
+            const messageInput = document.getElementById("message");
+            const message = messageInput.value.trim();
+
+            // 如果输入框不为空
+            if (message !== "") {
+                // 将消息添加到对话记录
+                const messageDiv = document.createElement("div");
+                messageDiv.classList.add("message");
+                messageDiv.innerHTML = `<span class="sender">You:</span> <span class="message-content">${message}</span>`;
+                chatlogContainer.appendChild(messageDiv);
+
+                // 滚动到对话记录的底部
+                chatlogContainer.scrollTop = chatlogContainer.scrollHeight;
+
+                // 清空表单输入框
+                messageInput.value = "";
+            }
+        });
+    </script>
+</body>
+</html>
